@@ -1,0 +1,12 @@
+Bytes_received,8552901217
+Bytes_sent,602809806
+Com_delete,470560
+Com_delete_multi,0
+Com_insert,162273
+Com_insert_select,0
+Com_replace,3937869
+Com_replace_select,0
+Com_select,132216
+Com_update,5740893
+Com_update_multi,0
+Slow_queries,11

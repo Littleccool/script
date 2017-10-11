@@ -1,0 +1,161 @@
+<?php
+
+function curlRequest($params){
+	$destUrl = "http://192.168.100.252:8010/stat/Report/report.php";
+	$index = 0;
+	foreach($params as $key => $value){
+		$delStr= $index++ == 0 ? '?' : '&';
+		$destUrl .=  $delStr . $key . "=" . $value;
+	}
+	//$data_string = json_encode($post_data);
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $destUrl);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	//curl_setopt($ch, CURLOPT_POST, 1);
+	//curl_setopt($ch, CURLOPT_POSTFIELDS,$data_string);
+	$result = curl_exec($ch);
+	echo $result;
+
+	curl_close($ch);
+}
+
+function register(){
+	$appId = 100001;
+	$uid = rand(10000000,80000000);
+	$openId = $uid ;
+	$nickName = "测试账号" . $uid ;
+	$regTs = time();
+	$action="register";
+	$params = array ("appId" => $appId,"uid" => $uid,"openId" => $openId, "nickName"=>$nickName,"regTs"=>$regTs,"action"=>$action);
+	curlRequest($params);	
+}
+
+function login($date){
+	
+	$file = "/data/tmp/report/report.$date.log";
+	echo $file . "</br>";
+	$handle = fopen($file, "r");
+	$index = 0;
+	while(!feof($handle)) { // 循环显示每一个行
+	
+		$str = fgets($handle);
+		$list = explode("|", $str);
+		$size = count($list);
+		if($size < 3) {	// 数据文件格式有误
+			break;
+		}
+		
+		$action=$list[1];
+		if($action != "register"){
+			continue;
+		}
+		//20170729 15:12:11|register|100001|64405888|64405888|测试账号64405888|1501312331
+		$appId = 100001;
+		$uid = $list[3];
+		$openId = $list[4] ;
+		$loginTs = time();
+		$action="login";
+		$params = array ("appId" => $appId,"uid" => $uid,"openId" => $openId, "loginTs"=>$loginTs,"action"=>$action);
+		curlRequest($params);
+		
+		if($index++ > 10000){
+			break;
+		}
+		
+	}
+	
+}
+
+function cashChange($date){
+	
+	$file = "/data/tmp/report/report.$date.log";
+	echo $file . "</br>";
+	$handle = fopen($file, "r");
+	$index = 0;
+	while(!feof($handle)) { // 循环显示每一个行
+	
+		$str = fgets($handle);
+		$list = explode("|", $str);
+		$size = count($list);
+		if($size < 3 || rand(0,100) > 30) {	// 数据文件格式有误
+			continue;
+		}
+		
+		$action=$list[1];
+		if($action != "register"){
+			continue;
+		}
+		//20170729 15:12:11|register|100001|64405888|64405888|测试账号64405888|1501312331
+		$appId = 100001;
+		$uid = $list[3];
+		$openId = $list[4] ;
+		$cash = rand(100,100000);
+		$action="cashChange";
+		$balance=rand(100,100000);
+		$reason=1;
+		$params = array ("appId" => $appId,"uid" => $uid,"openId" => $openId, "cash"=>$cash,"action"=>$action,"balance"=>$balance,"reason"=>$reason);
+		curlRequest($params);
+		
+		if($index++ > 10000){
+			break;
+		}
+		
+	}
+	
+}
+
+
+function charge($date){
+	
+	$file = "/data/tmp/report/report.$date.log";
+	echo $file . "</br>";
+	$handle = fopen($file, "r");
+	$index = 0;
+	while(!feof($handle)) { // 循环显示每一个行
+	
+		$str = fgets($handle);
+		$list = explode("|", $str);
+		$size = count($list);
+		if($size < 3 || rand(0,100) > 30) {	// 数据文件格式有误
+			continue;
+		}
+		
+		$action=$list[1];
+		if($action != "register"){
+			continue;
+		}
+		//20170729 15:12:11|register|100001|64405888|64405888|测试账号64405888|1501312331
+		$appId = 100001;
+		$uid = $list[3];
+		$openId = $list[4] ;
+		$cash = rand(100,100000);
+		$action="charge";
+		$rmb=$cash / 10;
+		$awardCash=$rmb;
+		$params = array ("appId" => $appId,"uid" => $uid,"openId" => $openId, "cash"=>$cash,"action"=>$action,"rmb"=>$rmb,"awardCash"=>$awardCash);
+		curlRequest($params);
+		
+		if($index++ > 10000){
+			break;
+		}
+		
+	}
+	
+}
+
+
+	/*for($index = 0; $index < 10000;$index++){
+			register();
+	}
+	
+	login('20170729');*/
+	
+	//login('20170729');
+	cashChange('20170729');
+	charge('20170729');
+
+?>
+
+
